@@ -7,6 +7,7 @@ import About from './components/About';
 import Contact from './components/Contact';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
+import Dashboard from './components/admin/Dashboard';
 
 function Portfolio() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/" element={<Portfolio />} />
           <Route path="/slogin" element={<Login />} />
           <Route path="/sregistration" element={<Register />} />
+          <Route path="/sdashboard" element={<Dashboard />} />
         </Routes>
       </div>
     </Router>
