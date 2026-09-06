@@ -100,9 +100,9 @@ Once a concept is chosen, development will begin. The portfolio will include:
 
 ## 👤 Author
 
-**[Your Name]** — Software Engineer
-📧 [your@email.com]
-🔗 [LinkedIn](#) | [GitHub](#)
+**Kuldeep Hawladar** — Full-Stack Developer | AI Enthusiast
+📧 [kuldeephawladar14@gmail.com](mailto:kuldeephawladar14@gmail.com)
+🔗 [LinkedIn](https://www.linkedin.com/in/kuldeeph10/) | [GitHub](https://github.com/Kuldeeph10)
 
 ---
 
