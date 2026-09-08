@@ -8,6 +8,7 @@ import Contact from './components/Contact';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Dashboard from './components/admin/Dashboard';
+import TerminalOS from './components/TerminalOS';
 
 function Portfolio() {
   return (
@@ -28,6 +29,7 @@ function App() {
     <Router>
       <div className="min-h-screen selection:bg-accent selection:text-bg-primary">
         <CustomCursor />
+        <TerminalOS />
         <Routes>
           <Route path="/" element={<Portfolio />} />
           <Route path="/slogin" element={<Login />} />

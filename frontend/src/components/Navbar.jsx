@@ -12,7 +12,13 @@ export default function Navbar() {
         </div>
         
         {/* Desktop Links */}
-        <div className="hidden md:flex gap-8 font-sans font-bold text-sm tracking-widest uppercase">
+        <div className="hidden md:flex gap-8 font-sans font-bold text-sm tracking-widest uppercase items-center">
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('toggle-terminal'))}
+            className="flex items-center gap-2 bg-text-primary text-bg-primary px-3 py-1 hover:bg-accent transition-colors group"
+          >
+            <span className="font-mono bg-bg-primary text-text-primary px-1 group-hover:bg-text-primary group-hover:text-accent transition-colors">Ctrl</span> + <span className="font-mono bg-bg-primary text-text-primary px-1 group-hover:bg-text-primary group-hover:text-accent transition-colors">`</span> Terminal
+          </button>
           <a href="#about" className="hover:text-accent transition-colors">About</a>
           <a href="#projects" className="hover:text-accent transition-colors">Work</a>
           <a href="#contact" className="hover:text-accent transition-colors">Contact</a>
@@ -37,12 +43,25 @@ export default function Navbar() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'tween', duration: 0.3, ease: 'easeInOut' }}
-            className="fixed inset-0 z-40 bg-bg-primary text-text-primary flex flex-col justify-center items-center"
+            className="fixed inset-0 z-40 bg-bg-primary text-text-primary flex flex-col justify-center items-center p-6"
           >
             <div className="flex flex-col gap-12 font-serif font-black text-5xl sm:text-6xl uppercase tracking-tighter text-center">
               <a href="#about" onClick={() => setIsOpen(false)} className="hover:text-accent transition-colors">About</a>
               <a href="#projects" onClick={() => setIsOpen(false)} className="hover:text-accent transition-colors">Work</a>
               <a href="#contact" onClick={() => setIsOpen(false)} className="hover:text-accent transition-colors">Contact</a>
+            </div>
+            
+            {/* Mobile Terminal Button */}
+            <div className="mt-20">
+              <button 
+                onClick={() => {
+                  setIsOpen(false);
+                  window.dispatchEvent(new Event('toggle-terminal'));
+                }}
+                className="flex items-center justify-center gap-2 bg-text-primary text-bg-primary px-6 py-3 hover:bg-accent transition-colors font-sans font-bold text-sm tracking-widest uppercase"
+              >
+                Open Terminal
+              </button>
             </div>
           </motion.div>
         )}
