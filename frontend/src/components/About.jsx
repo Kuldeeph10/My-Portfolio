@@ -1,18 +1,14 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
-const techStack = [
-  "REACT.JS", "NODE.JS", "PHP", "MONGODB", "LARAVEL", "NEXT.JS",
-  "TAILWIND CSS", "ANTIGRAVITY", "CURSOR AI", "PYTHON"
-];
-
 export default function About() {
   const [aboutData, setAboutData] = useState({
     title: 'FULL-STACK DEVELOPER',
     bio: 'I am a full-stack developer passionate about bridging the gap between raw backend logic and striking frontend aesthetics. Skilled in MERN and PHP, I use advanced AI tools to accelerate development and craft high-performance applications that leave a lasting impression.',
     headline_1: 'I Engineer',
     headline_highlight: 'Digital',
-    headline_2: 'Realities.'
+    headline_2: 'Realities.',
+    tech_stack: 'REACT.JS, NODE.JS, PHP, MONGODB, LARAVEL, NEXT.JS, TAILWIND CSS, ANTIGRAVITY, CURSOR AI, PYTHON'
   });
 
   useEffect(() => {
@@ -24,18 +20,25 @@ export default function About() {
           bio: data.about_bio || 'I am a full-stack developer passionate about bridging the gap between raw backend logic and striking frontend aesthetics. Skilled in MERN and PHP, I use advanced AI tools to accelerate development and craft high-performance applications that leave a lasting impression.',
           headline_1: data.about_headline_1 || 'I Engineer',
           headline_highlight: data.about_headline_highlight || 'Digital',
-          headline_2: data.about_headline_2 || 'Realities.'
+          headline_2: data.about_headline_2 || 'Realities.',
+          tech_stack: data.about_tech_stack || 'REACT.JS, NODE.JS, PHP, MONGODB, LARAVEL, NEXT.JS, TAILWIND CSS, ANTIGRAVITY, CURSOR AI, PYTHON'
         });
       })
       .catch(err => console.error("Failed to load dynamic about data", err));
   }, []);
+
+  // Split string into array, trim spaces, filter empty
+  const parsedTechStack = aboutData.tech_stack
+    .split(',')
+    .map(t => t.trim())
+    .filter(t => t.length > 0);
 
   return (
     <section id="about" className="min-h-screen bg-bg-primary text-text-primary flex flex-col justify-between overflow-hidden py-20 relative">
 
       {/* Decorative Giant Typography */}
       <div className="absolute top-0 left-0 w-full overflow-hidden opacity-5 pointer-events-none select-none flex">
-        <h2 className="font-serif text-[15rem] md:text-[25rem] font-black leading-none whitespace-nowrap">
+        <h2 className="font-serif text-[6rem] sm:text-[10rem] md:text-[15rem] lg:text-[25rem] font-black leading-none whitespace-nowrap">
           {aboutData.title}
         </h2>
       </div>
@@ -45,7 +48,7 @@ export default function About() {
         {/* Left Side: Headline */}
         <div className="w-full md:w-1/2">
           <motion.h2
-            className="font-serif text-5xl md:text-7xl font-black uppercase mb-6"
+            className="font-serif text-4xl sm:text-5xl md:text-7xl font-black uppercase mb-6 leading-tight md:leading-none"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -60,7 +63,7 @@ export default function About() {
         {/* Right Side: Bio */}
         <div className="w-full md:w-1/2 flex flex-col justify-end border-t-4 border-text-primary pt-6">
           <motion.p
-            className="font-sans text-xl md:text-2xl font-medium leading-relaxed max-w-xl"
+            className="font-sans text-lg sm:text-xl md:text-2xl font-medium leading-relaxed max-w-xl"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -91,7 +94,7 @@ export default function About() {
           transition={{ duration: 20, ease: "linear", repeat: Infinity }}
         >
           {/* We repeat the array twice to create a seamless loop */}
-          {[...techStack, ...techStack].map((tech, index) => (
+          {[...parsedTechStack, ...parsedTechStack].map((tech, index) => (
             <span key={index} className="flex items-center gap-8">
               {tech}
               <span className="text-bg-primary opacity-30 text-3xl">✦</span>

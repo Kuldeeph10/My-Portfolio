@@ -40,19 +40,19 @@ export default function Hero() {
     <section className="min-h-screen w-full flex flex-col md:flex-row relative overflow-hidden">
       
       {/* Left side: Massive Typography */}
-      <div className="w-full lg:w-3/5 min-h-[50vh] md:min-h-screen flex flex-col justify-center p-6 md:p-12 lg:p-20 z-10">
+      <div className="w-full lg:w-3/5 min-h-[50vh] md:min-h-screen flex flex-col justify-center p-4 sm:p-8 md:p-12 lg:p-20 pt-32 sm:pt-40 md:pt-12 z-10">
         <motion.div
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <h1 className="font-serif text-6xl md:text-7xl lg:text-[8rem] xl:text-[9rem] font-black leading-[0.85] tracking-tighter text-text-primary uppercase mb-6 min-h-[4em]">
+          <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-[7rem] xl:text-[9rem] font-black leading-[0.85] tracking-tighter text-text-primary uppercase mb-6 min-h-[4.5em] md:min-h-[4em]">
             I Build<br/>
             Things<br/>
-            <span className="text-accent underline decoration-8 underline-offset-8">That</span><br/>
-            <span className="border-r-8 border-text-primary pr-2 animate-pulse whitespace-nowrap">{currentText}</span>
+            <span className="text-accent underline decoration-4 md:decoration-8 underline-offset-4 md:underline-offset-8">That</span><br/>
+            <span className="border-r-4 md:border-r-8 border-text-primary pr-2 animate-pulse whitespace-nowrap">{currentText}</span>
           </h1>
-          <p className="font-sans text-lg md:text-xl font-medium max-w-md mt-8 border-l-4 border-text-primary pl-4">
+          <p className="font-sans text-base sm:text-lg md:text-xl font-medium max-w-md mt-6 md:mt-8 border-l-4 border-text-primary pl-4">
             Innovative Full-Stack Developer skilled in MERN & PHP with a passion for AI. I use advanced AI agents to accelerate development and build responsive, high-performance web applications.
           </p>
         </motion.div>

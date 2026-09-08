@@ -7,7 +7,9 @@ CREATE TABLE IF NOT EXISTS contacts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
     message TEXT NOT NULL,
+    status VARCHAR(20) DEFAULT 'unread',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
