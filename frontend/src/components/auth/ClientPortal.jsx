@@ -47,7 +47,7 @@ export default function ClientPortal() {
 
   const fetchMessages = async () => {
     try {
-      const res = await fetch(`http://localhost/Portfolio/backend/chat_sync.php?token=${token}`);
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/chat_sync.php?token=${token}`);
       if (res.status === 401) {
         localStorage.removeItem('client_token');
         navigate('/client-login');
@@ -75,7 +75,7 @@ export default function ClientPortal() {
 
     // Ping server that we are typing
     try {
-      await fetch('http://localhost/Portfolio/backend/chat_typing.php', {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/chat_typing.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, is_typing: true })
@@ -85,7 +85,7 @@ export default function ClientPortal() {
 
   const handleStopTyping = async () => {
     try {
-      await fetch('http://localhost/Portfolio/backend/chat_typing.php', {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/chat_typing.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, is_typing: false })
@@ -117,7 +117,7 @@ export default function ClientPortal() {
     handleStopTyping();
 
     try {
-      await fetch('http://localhost/Portfolio/backend/chat_send.php', {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/chat_send.php`, {
         method: 'POST',
         body: formData
       });
@@ -140,7 +140,7 @@ export default function ClientPortal() {
     const about = form.about.value;
 
     try {
-      const res = await fetch('http://localhost/Portfolio/backend/client_auth.php?action=update_profile', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/client_auth.php?action=update_profile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, name, about })
@@ -216,8 +216,8 @@ export default function ClientPortal() {
             <div key={msg.id} className={`flex ${msg.sender === 'client' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[90%] md:max-w-[70%] p-4 border-4 border-text-primary shadow-[4px_4px_0_0_#111111] ${msg.sender === 'client' ? 'bg-accent text-text-primary' : 'bg-white text-text-primary'}`}>
                 {msg.media_url && (
-                  <a href={`http://localhost/Portfolio/${msg.media_url}`} target="_blank" rel="noopener noreferrer" download className="block mb-3 relative group">
-                    <img src={`http://localhost/Portfolio/${msg.media_url}`} alt="media" className="max-w-full h-auto border-4 border-text-primary group-hover:opacity-80 transition-opacity cursor-pointer" />
+                  <a href={`${import.meta.env.VITE_API_BASE_URL}/${msg.media_url}`} target="_blank" rel="noopener noreferrer" download className="block mb-3 relative group">
+                    <img src={`${import.meta.env.VITE_API_BASE_URL}/${msg.media_url}`} alt="media" className="max-w-full h-auto border-4 border-text-primary group-hover:opacity-80 transition-opacity cursor-pointer" />
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                       <span className="bg-text-primary text-bg-primary font-black uppercase tracking-widest px-4 py-2 text-xs border-2 border-text-primary shadow-[2px_2px_0_0_#111111]">OPEN MEDIA</span>
                     </div>

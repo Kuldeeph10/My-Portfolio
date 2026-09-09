@@ -10,7 +10,7 @@ export default function Navbar() {
       const token = localStorage.getItem('client_token');
       if (token) {
         try {
-          const res = await fetch(`http://localhost/Portfolio/backend/check_unread.php?token=${token}`);
+          const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/check_unread.php?token=${token}`);
           const data = await res.json();
           setHasUnread(data.unread);
         } catch (e) {}

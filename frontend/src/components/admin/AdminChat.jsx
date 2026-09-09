@@ -44,58 +44,61 @@ export default function AdminChat() {
 
   const fetchClients = async () => {
     try {
-      const res = await fetch('http://localhost/Portfolio/backend/admin_chat.php?action=get_clients');
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/admin_chat.php?action=get_clients`);
       const data = await res.json();
       setClients(data);
-    } catch(e) {}
+    } catch (err) {}
   };
 
   const fetchMessages = async () => {
     if (!activeClient) return;
     try {
-      const res = await fetch(`http://localhost/Portfolio/backend/admin_chat.php?action=get_messages&client_id=${activeClient.id}`);
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/admin_chat.php?action=get_messages&client_id=${activeClient.id}`);
       const data = await res.json();
-      setMessages(data.messages || []);
+      if (data.messages) setMessages(data.messages);
       setClientOnline(data.client_online);
       setClientTyping(data.client_typing);
-    } catch(e) {}
+    } catch (err) {}
   };
 
   const handleTyping = async (e) => {
     setInputMsg(e.target.value);
+    
+    // Auto-expand textarea
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 150) + 'px';
     }
-    
+
     try {
-      await fetch('http://localhost/Portfolio/backend/chat_typing.php', {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/chat_typing.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ admin_auth: true, client_id: activeClient.id, is_typing: true })
+        body: JSON.stringify({ admin_typing: true, target_client: activeClient.id })
       });
     } catch(e) {}
   };
 
   const handleStopTyping = async () => {
     try {
-      await fetch('http://localhost/Portfolio/backend/chat_typing.php', {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/chat_typing.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ admin_auth: true, client_id: activeClient.id, is_typing: false })
+        body: JSON.stringify({ admin_typing: false, target_client: activeClient.id })
       });
     } catch(e) {}
   };
 
   const handleSend = async () => {
-    if (!inputMsg.trim() && !mediaFile) return;
+    if ((!inputMsg.trim() && !mediaFile) || !activeClient) return;
 
     const formData = new FormData();
-    formData.append('admin_auth', 'true');
-    formData.append('client_id', activeClient.id);
+    formData.append('is_admin', true);
+    formData.append('target_client', activeClient.id);
     if (inputMsg.trim()) formData.append('message', inputMsg);
     if (mediaFile) formData.append('media', mediaFile);
 
+    // Optimistic update
     const optimisticMsg = {
       id: Date.now(),
       sender: 'admin',
@@ -111,63 +114,61 @@ export default function AdminChat() {
     handleStopTyping();
 
     try {
-      await fetch('http://localhost/Portfolio/backend/chat_send.php', {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/chat_send.php`, {
         method: 'POST',
         body: formData
       });
       fetchMessages();
-    } catch(e) {}
+    } catch (err) {}
   };
 
   const handleClearChat = async () => {
-    if (!window.confirm('Clear all chat history with this client?')) return;
-    try {
-      await fetch('http://localhost/Portfolio/backend/admin_chat.php?action=clear_chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ client_id: activeClient.id })
-      });
-      setMessages([]);
-      fetchMessages();
-    } catch(e) {}
+    if (!activeClient) return;
+    if (window.confirm(`Are you sure you want to clear all chat history with ${activeClient.name}? This cannot be undone.`)) {
+      try {
+        await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/admin_chat.php?action=clear_chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ client_id: activeClient.id })
+        });
+        setMessages([]);
+      } catch (err) {}
+    }
   };
 
   return (
     <div className="bg-bg-primary text-text-primary flex flex-col md:flex-row h-[calc(100dvh-250px)] md:h-[700px] border-4 border-text-primary shadow-[10px_10px_0_0_#111111] overflow-hidden">
-      {/* Sidebar */}
-      <div className={`w-full md:w-80 border-r-4 border-text-primary flex flex-col bg-white ${activeClient ? 'hidden md:flex' : 'flex'}`}>
-        <div className="p-4 border-b-4 border-text-primary bg-accent text-text-primary font-black uppercase tracking-widest flex justify-between items-center">
-          <span>Client List</span>
-          <span className="bg-text-primary text-accent px-2 py-1 text-xs">{clients.length} Total</span>
+      
+      {/* Sidebar - Clients List */}
+      <div className={`w-full md:w-80 bg-white border-r-0 md:border-r-4 border-b-4 md:border-b-0 border-text-primary flex flex-col shrink-0 overflow-hidden ${activeClient ? 'hidden md:flex' : 'flex'}`}>
+        <div className="p-4 border-b-4 border-text-primary bg-text-primary text-bg-primary flex justify-between items-center shrink-0">
+          <h2 className="font-serif font-black text-xl uppercase tracking-tighter">Clients</h2>
+          <span className="bg-accent text-text-primary font-black px-2 py-1 text-xs">{clients.length}</span>
         </div>
-        <div className="flex-1 overflow-y-auto bg-bg-primary">
-          {clients.length === 0 ? (
-            <div className="p-6 text-center font-bold text-text-primary/50 uppercase tracking-widest text-sm">No clients registered.</div>
-          ) : clients.map(client => (
+        <div className="overflow-y-auto flex-1 scrollbar-brutal">
+          {clients.map(c => (
             <div 
-              key={client.id} 
-              onClick={() => { setActiveClient(client); setMessages([]); }}
-              className={`p-4 border-b-4 border-text-primary cursor-pointer flex items-center gap-4 hover:bg-accent hover:text-text-primary transition-colors ${activeClient?.id === client.id ? 'bg-text-primary text-bg-primary' : 'bg-white text-text-primary'}`}
+              key={c.id} 
+              onClick={() => setActiveClient(c)}
+              className={`p-4 border-b-4 border-text-primary cursor-pointer hover:bg-accent hover:text-text-primary transition-colors flex items-center justify-between group ${activeClient?.id === c.id ? 'bg-accent text-text-primary' : ''}`}
             >
-              <div className={`w-12 h-12 border-4 border-current flex items-center justify-center shrink-0 font-black text-xl uppercase ${activeClient?.id === client.id ? 'bg-text-primary text-accent' : 'bg-accent text-text-primary'}`}>
-                {client.profile_image ? (
-                  <img src={client.profile_image} className="w-full h-full object-cover" />
-                ) : client.name.charAt(0)}
+              <div className="flex flex-col">
+                <span className="font-black uppercase tracking-wider">{c.name}</span>
+                <span className="text-xs font-bold text-text-primary/60 group-hover:text-text-primary/80 uppercase truncate max-w-[150px]">{c.about || 'No about'}</span>
               </div>
-              <div className="flex-1 overflow-hidden">
-                <div className="flex justify-between items-baseline mb-1">
-                  <h4 className="font-black truncate uppercase tracking-widest text-sm">{client.name}</h4>
-                  {client.is_online && <span className="w-3 h-3 bg-green-500 border-2 border-current shadow-[2px_2px_0_0_#000] shrink-0"></span>}
-                </div>
-                <div className="text-xs font-bold truncate flex justify-between opacity-70 uppercase tracking-wider">
-                  <span>{client.last_message || 'No messages yet'}</span>
-                  {client.unread_count > 0 && (
-                    <span className="bg-red-500 text-white border-2 border-current font-black px-2 text-xs ml-2">{client.unread_count}</span>
-                  )}
-                </div>
+              <div className="flex flex-col items-end gap-1">
+                {c.unread_count > 0 && (
+                  <span className="bg-text-primary text-bg-primary font-black text-[10px] px-2 py-1 rounded-full shadow-[2px_2px_0_0_#111111]">{c.unread_count}</span>
+                )}
+                {c.is_online ? (
+                  <div className="w-3 h-3 bg-green-400 border-2 border-text-primary shadow-[2px_2px_0_0_#111111]" title="Online"></div>
+                ) : (
+                  <div className="w-3 h-3 bg-zinc-400 border-2 border-text-primary shadow-[2px_2px_0_0_#111111]" title="Offline"></div>
+                )}
               </div>
             </div>
           ))}
+          {clients.length === 0 && <div className="p-6 text-center font-bold uppercase tracking-widest text-text-primary/50">No clients found</div>}
         </div>
       </div>
 
@@ -177,33 +178,35 @@ export default function AdminChat() {
           {/* Header */}
           <div className="p-4 border-b-4 border-text-primary bg-text-primary text-bg-primary flex justify-between items-center">
             <div className="flex items-center gap-4">
-              <button onClick={() => setActiveClient(null)} className="md:hidden p-2 hover:text-accent transition-colors">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7"></path></svg>
+              <button onClick={() => setActiveClient(null)} className="md:hidden mr-2 hover:text-accent transition-colors">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7"></path></svg>
               </button>
               <div className="flex flex-col">
-                <span className="font-black tracking-widest text-xl uppercase">{activeClient.name}</span>
-                <div className="text-sm font-bold tracking-wider uppercase">
-                  {clientTyping ? <span className="text-accent animate-pulse font-mono">typing...</span> : clientOnline ? <span className="text-green-400 flex items-center gap-2"><div className="w-3 h-3 bg-green-400 border-2 border-green-700 shadow-[2px_2px_0_0_#000]"></div> ONLINE</span> : <span className="text-zinc-500">OFFLINE</span>}
-                </div>
+                <span className="font-black text-xl uppercase tracking-widest">{activeClient.name}</span>
+                {clientTyping ? (
+                  <span className="text-accent text-sm font-black font-mono tracking-widest animate-pulse uppercase">typing...</span>
+                ) : clientOnline ? (
+                  <span className="text-green-400 font-bold text-sm tracking-wider uppercase flex items-center gap-2"><div className="w-2 h-2 bg-green-400 rounded-none border border-green-700"></div> ONLINE</span>
+                ) : (
+                  <span className="text-zinc-500 font-bold text-sm tracking-wider uppercase">OFFLINE</span>
+                )}
               </div>
             </div>
-            <button onClick={handleClearChat} className="bg-red-500 text-white border-4 border-red-700 px-4 py-2 font-black text-xs uppercase hover:bg-red-600 transition-colors shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Clear Chat</button>
+            <button onClick={handleClearChat} className="bg-red-500 text-white font-black uppercase tracking-widest px-4 py-2 border-2 border-white shadow-[2px_2px_0_0_#fff] hover:bg-red-600 hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-xs">CLEAR CHAT</button>
           </div>
 
-          {/* Messages */}
+          {/* Chat Messages */}
           <div 
-            ref={chatContainerRef}
+            ref={chatContainerRef} 
             onScroll={handleScroll}
-            className="flex-1 p-6 overflow-y-auto flex flex-col gap-6 bg-bg-primary scrollbar-brutal"
+            className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-6 scrollbar-brutal"
           >
-            {messages.length === 0 && <div className="text-center text-text-primary/50 font-black p-10 mx-auto uppercase tracking-widest">No messages yet. Say hello!</div>}
-            
-            {messages.map(msg => (
+            {messages.map((msg) => (
               <div key={msg.id} className={`flex ${msg.sender === 'admin' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[70%] p-4 border-4 border-text-primary shadow-[4px_4px_0_0_#111111] ${msg.sender === 'admin' ? 'bg-accent text-text-primary' : 'bg-white text-text-primary'}`}>
+                <div className={`max-w-[90%] md:max-w-[70%] p-4 border-4 border-text-primary shadow-[4px_4px_0_0_#111111] ${msg.sender === 'admin' ? 'bg-accent text-text-primary' : 'bg-white text-text-primary'}`}>
                   {msg.media_url && (
-                    <a href={`http://localhost/Portfolio/${msg.media_url}`} target="_blank" rel="noopener noreferrer" download className="block mb-3 relative group">
-                      <img src={`http://localhost/Portfolio/${msg.media_url}`} alt="media" className="max-w-full h-auto border-4 border-text-primary group-hover:opacity-80 transition-opacity cursor-pointer" />
+                    <a href={`${import.meta.env.VITE_API_BASE_URL}/${msg.media_url}`} target="_blank" rel="noopener noreferrer" download className="block mb-3 relative group">
+                      <img src={`${import.meta.env.VITE_API_BASE_URL}/${msg.media_url}`} alt="media" className="max-w-full h-auto border-4 border-text-primary group-hover:opacity-80 transition-opacity cursor-pointer" />
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                         <span className="bg-text-primary text-bg-primary font-black uppercase tracking-widest px-4 py-2 text-xs border-2 border-text-primary shadow-[2px_2px_0_0_#111111]">OPEN MEDIA</span>
                       </div>

@@ -18,7 +18,7 @@ export default function Dashboard() {
 
   // Fetch current settings and messages on load
   useEffect(() => {
-    fetch('http://localhost/Portfolio/backend/get_settings.php', { cache: 'no-store' })
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/get_settings.php`, { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
         setSettings({
@@ -36,7 +36,7 @@ export default function Dashboard() {
   }, []);
 
   const fetchMessages = () => {
-    fetch('http://localhost/Portfolio/backend/get_messages.php', { cache: 'no-store' })
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/get_messages.php`, { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
         if(Array.isArray(data)) setMessages(data);
@@ -48,7 +48,7 @@ export default function Dashboard() {
     if (action === 'delete' && !window.confirm('Are you sure you want to delete this message?')) return;
     
     try {
-      const response = await fetch('http://localhost/Portfolio/backend/manage_message.php', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/manage_message.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, action })
@@ -66,7 +66,7 @@ export default function Dashboard() {
     setStatus('saving');
     
     try {
-      const response = await fetch('http://localhost/Portfolio/backend/update_settings.php', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/update_settings.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)

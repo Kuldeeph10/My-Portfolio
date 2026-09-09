@@ -25,7 +25,7 @@ export default function Login() {
     setStatus('loading');
 
     try {
-      const response = await fetch('http://localhost/Portfolio/backend/login.php', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/login.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

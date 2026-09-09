@@ -21,7 +21,7 @@ export default function ClientAuth() {
 
     const action = isLogin ? 'login' : 'register';
     try {
-      const res = await fetch(`http://localhost/Portfolio/backend/client_auth.php?action=${action}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/client_auth.php?action=${action}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

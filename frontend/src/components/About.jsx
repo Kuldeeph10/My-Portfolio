@@ -12,7 +12,7 @@ export default function About() {
   });
 
   useEffect(() => {
-    fetch('http://localhost/Portfolio/backend/get_settings.php', { cache: 'no-store' })
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/get_settings.php`, { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
         setAboutData({

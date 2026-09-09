@@ -10,7 +10,7 @@ export default function Contact() {
     setStatus('sending');
 
     try {
-      const response = await fetch('http://localhost/Portfolio/backend/contact.php', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/backend/contact.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
