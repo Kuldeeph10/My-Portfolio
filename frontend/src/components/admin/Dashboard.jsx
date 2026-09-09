@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import AdminChat from './AdminChat';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('settings');
@@ -112,12 +113,18 @@ export default function Dashboard() {
             onClick={() => setActiveTab('messages')} 
             className={`font-black uppercase text-sm sm:text-xl px-4 sm:px-6 py-2 sm:py-3 transition-colors relative whitespace-nowrap ${activeTab === 'messages' ? 'bg-accent text-bg-primary' : 'bg-transparent text-text-primary hover:text-accent'}`}
           >
-            Messages
+            Contact Form
             {unreadCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
                 {unreadCount}
               </span>
             )}
+          </button>
+          <button 
+            onClick={() => setActiveTab('live_chats')} 
+            className={`font-black uppercase text-sm sm:text-xl px-4 sm:px-6 py-2 sm:py-3 transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'live_chats' ? 'bg-accent text-bg-primary' : 'bg-transparent text-text-primary hover:text-accent'}`}
+          >
+            Live Chats <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
           </button>
         </div>
 
@@ -243,6 +250,10 @@ export default function Dashboard() {
               </div>
             ))}
           </div>
+        )}
+
+        {activeTab === 'live_chats' && (
+          <AdminChat />
         )}
 
       </div>

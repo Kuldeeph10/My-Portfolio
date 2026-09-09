@@ -1,8 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasUnread, setHasUnread] = useState(false);
+
+  useEffect(() => {
+    const checkUnread = async () => {
+      const token = localStorage.getItem('client_token');
+      if (token) {
+        try {
+          const res = await fetch(`http://localhost/Portfolio/backend/check_unread.php?token=${token}`);
+          const data = await res.json();
+          setHasUnread(data.unread);
+        } catch (e) {}
+      } else {
+        setHasUnread(false);
+      }
+    };
+    checkUnread();
+    const interval = setInterval(checkUnread, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -19,9 +38,17 @@ export default function Navbar() {
           >
             <span className="font-mono bg-bg-primary text-text-primary px-1 group-hover:bg-text-primary group-hover:text-accent transition-colors">Ctrl</span> + <span className="font-mono bg-bg-primary text-text-primary px-1 group-hover:bg-text-primary group-hover:text-accent transition-colors">`</span> Terminal
           </button>
-          <a href="#about" className="hover:text-accent transition-colors">About</a>
-          <a href="#projects" className="hover:text-accent transition-colors">Work</a>
-          <a href="#contact" className="hover:text-accent transition-colors">Contact</a>
+          <a href="/#about" className="hover:text-accent transition-colors">About</a>
+          <a href="/#projects" className="hover:text-accent transition-colors">Work</a>
+          <a href="/#contact" className="hover:text-accent transition-colors">Contact</a>
+          <a href="/portal" className="text-accent hover:text-white transition-colors flex items-center gap-2">
+            Portal
+            {hasUnread ? (
+              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse ring-2 ring-white"></span>
+            ) : (
+              <span className="w-2 h-2 bg-accent rounded-full animate-pulse"></span>
+            )}
+          </a>
         </div>
 
         {/* Mobile Hamburger Toggle */}
@@ -46,9 +73,17 @@ export default function Navbar() {
             className="fixed inset-0 z-40 bg-bg-primary text-text-primary flex flex-col justify-center items-center p-6"
           >
             <div className="flex flex-col gap-12 font-serif font-black text-5xl sm:text-6xl uppercase tracking-tighter text-center">
-              <a href="#about" onClick={() => setIsOpen(false)} className="hover:text-accent transition-colors">About</a>
-              <a href="#projects" onClick={() => setIsOpen(false)} className="hover:text-accent transition-colors">Work</a>
-              <a href="#contact" onClick={() => setIsOpen(false)} className="hover:text-accent transition-colors">Contact</a>
+              <a href="/#about" onClick={() => setIsOpen(false)} className="hover:text-accent transition-colors">About</a>
+              <a href="/#projects" onClick={() => setIsOpen(false)} className="hover:text-accent transition-colors">Work</a>
+              <a href="/#contact" onClick={() => setIsOpen(false)} className="hover:text-accent transition-colors">Contact</a>
+              <a href="/portal" onClick={() => setIsOpen(false)} className="text-accent hover:text-white transition-colors flex items-center justify-center gap-4">
+                Portal 
+                {hasUnread ? (
+                  <span className="w-4 h-4 bg-red-500 border-2 border-text-primary shadow-[2px_2px_0_0_#111111] animate-bounce"></span>
+                ) : (
+                  <span className="w-3 h-3 bg-accent rounded-full animate-pulse"></span>
+                )}
+              </a>
             </div>
             
             {/* Mobile Terminal Button */}

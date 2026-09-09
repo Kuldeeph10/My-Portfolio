@@ -9,6 +9,8 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Dashboard from './components/admin/Dashboard';
 import TerminalOS from './components/TerminalOS';
+import ClientAuth from './components/auth/ClientAuth';
+import ClientPortal from './components/auth/ClientPortal';
 
 function Portfolio() {
   return (
@@ -35,6 +37,8 @@ function App() {
           <Route path="/slogin" element={<Login />} />
           <Route path="/sregistration" element={<Register />} />
           <Route path="/sdashboard" element={<Dashboard />} />
+          <Route path="/client-login" element={<><Navbar /><ClientAuth /></>} />
+          <Route path="/portal" element={<><Navbar /><ClientPortal /></>} />
         </Routes>
       </div>
     </Router>

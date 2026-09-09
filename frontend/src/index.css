@@ -14,3 +14,20 @@
     @apply bg-bg-primary text-text-primary font-sans m-0 p-0 overflow-x-hidden;
   }
 }
+
+@layer utilities {
+  .scrollbar-brutal::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-brutal::-webkit-scrollbar-track {
+    background: var(--color-bg-primary);
+    border-left: 2px solid var(--color-text-primary);
+  }
+  .scrollbar-brutal::-webkit-scrollbar-thumb {
+    background: var(--color-text-primary);
+  }
+  .scrollbar-brutal::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent);
+  }
+}
